@@ -49,15 +49,15 @@ std::vector<std::vector<std::string>> tokenizeLyrics(const std::vector<std::stri
   return ret;
 }
 
-void function(std::string& w, std::mutex& mut) {
-  MyHashtable<std::string, int> ht;
-  Dictionary<std::string, int>& dict = ht;
+void function(std::vector<std::string>& file, std::mutex& mut, Dictionary<std::string, int>& dict) {
+  for(auto& w: file){
   mut.lock();
     int count = dict.get(w);
     ++count;
     dict.set(w, count);
     mut.unlock();
   }
+}
 
 int main(int argc, char **argv)
 {
@@ -85,16 +85,14 @@ int main(int argc, char **argv)
   MyHashtable<std::string, int> ht;
   Dictionary<std::string, int>& dict = ht;
   // std::vector<std::thread> thread;
-  // std::mutex mutex;
+   std::mutex mutex;
 
   // write code here
 
  // Start Timer                                                                
    auto start =std::chrono::steady_clock::now();
 
-   std::vector<std::thread> myThread;
    std::vector<std::thread> myThreads;
-   std::mutex mu;
 // for (auto & filecontent: wordmap) {
 //      for (auto & w : filecontent) {
 //        std::thread myThreads(function, std::ref(w));
@@ -109,10 +107,14 @@ int main(int argc, char **argv)
    //   }
   
     for (auto & filecontent: wordmap) {
-      for (auto & w : filecontent) {
-	std::thread myThread2 (function, std::ref(w), std::ref(mu));
+      std::thread myThread2 (function, std::ref(filecontent), std::ref(mutex), std::ref(dict) );
 	myThreads.push_back(std::move(myThread2));
-      }
+    }
+    for(auto & t : myThreads){
+      if(t.joinable())
+	t.join();
+      else
+	std::cout<<"Does not join";
     }
 
 // Stop Timer                                                                 
