@@ -49,12 +49,14 @@ std::vector<std::vector<std::string>> tokenizeLyrics(const std::vector<std::stri
   return ret;
 }
 
-void function(std::string& w) {
+void function(std::string& w, std::mutex& mut) {
   MyHashtable<std::string, int> ht;
   Dictionary<std::string, int>& dict = ht;
+  mut.lock();
     int count = dict.get(w);
     ++count;
     dict.set(w, count);
+    mut.unlock();
   }
 
 int main(int argc, char **argv)
@@ -90,22 +92,25 @@ int main(int argc, char **argv)
  // Start Timer                                                                
    auto start =std::chrono::steady_clock::now();
 
-  std::vector<std::thread> threads;
-  std::mutex mutex1;
-for (auto & filecontent: wordmap) {
-     for (auto & w : filecontent) {
-       mutex1.lock();
-       std::thread threads(function, std::ref(w));
-       threads.push_back(std::move(threads));
-       mutex1.unlock();
-     }
-   }
+   std::vector<std::thread> myThreads;
+   std::mutex mu;
+// for (auto & filecontent: wordmap) {
+//      for (auto & w : filecontent) {
+//        std::thread myThreads(function, std::ref(w));
+//        myThreads.push_back(std::move(myThreads));
+//        mutex1.unlock();
+//      }
+//    }
+   // int val = 0;
+   // for (int i=0; i < 16; ++i)
+   //   {
+   //     myThreads.push_back(std::move(myThreads))
+   //   }
   
-   for (auto & filecontent: wordmap) {
+    for (auto & filecontent: wordmap) {
       for (auto & w : filecontent) {
-        int count = dict.get(w);
-        ++count;
-        dict.set(w, count);
+	std::thread myThreads (function, std::ref(w), std::ref(mu));
+	myThreads.push_back(std::move(myThreads));
       }
     }
 
