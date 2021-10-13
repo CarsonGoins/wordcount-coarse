@@ -92,6 +92,7 @@ int main(int argc, char **argv)
  // Start Timer                                                                
    auto start =std::chrono::steady_clock::now();
 
+   std::vector<std::thread> myThread;
    std::vector<std::thread> myThreads;
    std::mutex mu;
 // for (auto & filecontent: wordmap) {
@@ -109,8 +110,8 @@ int main(int argc, char **argv)
   
     for (auto & filecontent: wordmap) {
       for (auto & w : filecontent) {
-	std::thread myThreads (function, std::ref(w), std::ref(mu));
-	myThreads.push_back(std::move(myThreads));
+	std::thread myThread2 (function, std::ref(w), std::ref(mu));
+	myThreads.push_back(std::move(myThread2));
       }
     }
 
