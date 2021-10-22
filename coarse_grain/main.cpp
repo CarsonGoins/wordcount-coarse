@@ -83,7 +83,7 @@ int main(int argc, char **argv)
   auto wordmap = tokenizeLyrics(files);
 
   MyHashtable<std::string, int> ht;
-  Dictionary<std::string, int>& dict = ht;
+   Dictionary<std::string, int>& dict = ht;
   // std::vector<std::thread> thread;
    std::mutex mutex;
 
@@ -120,6 +120,7 @@ int main(int argc, char **argv)
 // Stop Timer                                                                 
   auto stop = std::chrono::steady_clock::now();
   std::chrono::duration<double> time_elapsed = stop-start;
+  std::cerr << time_elapsed.count()<<"\n";
 
   // Check Hash Table Values 
   /* (you can uncomment, but this must be commented out for tests)
@@ -131,6 +132,7 @@ int main(int argc, char **argv)
 
   // Do not touch this, need for test cases
   std::cout << ht.get(testWord) << std::endl;
+  
 
   return 0;
 }
